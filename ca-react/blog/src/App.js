@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import { useState } from "react";
+import React, { useState } from "react";
 import "./App.css";
 
 function App() {
@@ -84,4 +84,27 @@ function Modal(props) {
   );
 }
 
+// 옛날 버전 컴포넌트 생성
+class Profile extends React.Component {
+  constructor() {
+    super();
+    this.state = { name: "Kim", age: 30 };
+  }
+
+  render() {
+    return (
+      <div>
+        <h3>프로필입니다</h3>
+        <p>저는 {this.state.name} 입니다.</p>
+        <button
+          onClick={() => {
+            this.setState({ name: "Park" });
+          }}
+        >
+          버튼
+        </button>
+      </div>
+    );
+  }
+}
 export default App;
