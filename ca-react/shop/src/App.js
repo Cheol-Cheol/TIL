@@ -5,11 +5,14 @@ import data from "./data";
 import bg from "./img/bg.png";
 import { Routes, Route, Link, useNavigate, Outlet } from "react-router-dom";
 import Detail from "./routes/Detail";
+import axios from "axios";
 
 function App() {
   let [shoes, setShoes] = useState(data);
   let navigate = useNavigate();
-
+  let [btn, setBtn] = useState(true);
+  let [cnt, setCnt] = useState(2);
+  let [loading, setLoading] = useState(false);
   return (
     <div className="App">
       <Navbar bg="dark" variant="dark">
@@ -43,7 +46,6 @@ function App() {
                 className="main-bg"
                 style={{ backgroundImage: `url(${bg})` }}
               ></div>
-
               {/* grid는 오리지널 부트스트랩 코드가 더 간단명료해서 사용했음 */}
               <div className="container">
                 <div className="row">
@@ -52,6 +54,32 @@ function App() {
                   })}
                 </div>
               </div>
+
+              {btn ? (
+                <button
+                  onClick={() => {
+                    setLoading(true);
+                    axios
+                      .get(
+                        `https://codingapple1.github.io/shop/data${cnt}.json`
+                      )
+                      .then(({ data }) => {
+                        setShoes([...shoes, ...data]);
+                        setLoading(false);
+                        if (cnt == 3) {
+                          setCnt(cnt++);
+                        } else setBtn(false);
+                      })
+                      .catch(() => {
+                        console.log("실패함");
+                      });
+                  }}
+                >
+                  더보기
+                </button>
+              ) : null}
+
+              {loading == true ? <h3>로딩중입니다...</h3> : null}
             </>
           }
         />
