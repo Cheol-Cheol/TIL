@@ -61,6 +61,7 @@ function TapContent({ 탭 }) {
   // else if (탭 == 1) return <div>내용1</div>;
   // else if (탭 == 2) return <div>내용2</div>;
   let [fade, setFade] = useState("");
+
   useEffect(() => {
     // React18 - automatic batching
     let a = setTimeout(() => {

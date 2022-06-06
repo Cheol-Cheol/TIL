@@ -1,11 +1,12 @@
 import "./App.css";
-import { useState } from "react";
+import { createContext, useState } from "react";
 import { Navbar, Container, Nav } from "react-bootstrap";
 import data from "./data";
 import bg from "./img/bg.png";
 import { Routes, Route, Link, useNavigate, Outlet } from "react-router-dom";
-import Detail from "./routes/Detail";
 import axios from "axios";
+import Detail from "./routes/Detail";
+import Cart from "./routes/Cart";
 
 function App() {
   let [shoes, setShoes] = useState(data);
@@ -13,6 +14,7 @@ function App() {
   let [btn, setBtn] = useState(true);
   let [cnt, setCnt] = useState(2);
   let [loading, setLoading] = useState(false);
+
   return (
     <div className="App">
       <Navbar bg="dark" variant="dark">
@@ -28,10 +30,17 @@ function App() {
             </Nav.Link>
             <Nav.Link
               onClick={() => {
-                navigate("/detail");
+                navigate("/detail/0");
               }}
             >
               Detail
+            </Nav.Link>
+            <Nav.Link
+              onClick={() => {
+                navigate("/cart");
+              }}
+            >
+              Cart
             </Nav.Link>
           </Nav>
         </Container>
@@ -84,25 +93,7 @@ function App() {
           }
         />
         <Route path="/detail/:id" element={<Detail shoes={shoes} />} />
-        {/* Nested Routes */}
-        <Route path="/about" element={<About />}>
-          <Route path="member" element={<div>멤버 페이지</div>} />
-          <Route path="location" element={<div>위치 페이지</div>} />
-        </Route>
-
-        <Route
-          path="/event"
-          element={
-            <div>
-              <h4>오늘의 이벤트</h4>
-              <Outlet></Outlet>
-            </div>
-          }
-        >
-          <Route path="one" element={<div>첫 주문시 양배추즙 서비스</div>} />
-          <Route path="two" element={<div>생일기념 쿠폰받기</div>} />
-        </Route>
-
+        <Route path="/cart" element={<Cart />} />
         <Route path="*" element={<div>없는 페이지에요</div>} />
       </Routes>
     </div>
