@@ -1,5 +1,5 @@
 import "./App.css";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { Navbar, Container, Nav } from "react-bootstrap";
 import data from "./data";
 import bg from "./img/bg.png";
@@ -7,13 +7,35 @@ import { Routes, Route, Link, useNavigate, Outlet } from "react-router-dom";
 import axios from "axios";
 import Detail from "./routes/Detail";
 import Cart from "./routes/Cart";
-
+import { useQuery } from "react-query";
+// 실시간 데이터가 중요하면 리액트 쿼리 9:22
 function App() {
   let [shoes, setShoes] = useState(data);
   let navigate = useNavigate();
   let [btn, setBtn] = useState(true);
   let [cnt, setCnt] = useState(2);
   let [loading, setLoading] = useState(false);
+
+  // react query
+  let result = useQuery(
+    "작명",
+    () =>
+      axios.get("https://codingapple1.github.io/userdata.json").then((a) => {
+        console.log("요청됨");
+        return a.data;
+      }),
+    { staleTime: 2000 }
+  );
+
+  // result.data - 성공 시
+  // result.isLoading - 요청 중 (true 반환)
+  // result.error - 실패 시
+
+  useEffect(() => {
+    if (!JSON.parse(localStorage.getItem("watched"))) {
+      localStorage.setItem("watched", JSON.stringify([]));
+    }
+  }, []);
 
   return (
     <div className="App">
@@ -42,6 +64,9 @@ function App() {
             >
               Cart
             </Nav.Link>
+          </Nav>
+          <Nav className="ms-auto" style={{ color: "white" }}>
+            {result.isLoading ? "로딩중" : result.data.name}
           </Nav>
         </Container>
       </Navbar>
@@ -100,8 +125,15 @@ function App() {
   );
 }
 function Card(props) {
+  let navigate = useNavigate();
+
   return (
-    <div className="col-md-4">
+    <div
+      className="col-md-4"
+      onClick={() => {
+        navigate(`/detail/${props.i}`);
+      }}
+    >
       <img
         src={`https://codingapple1.github.io/shop/shoes${props.i + 1}.jpg`}
         width="80%"

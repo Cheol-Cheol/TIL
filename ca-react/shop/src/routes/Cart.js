@@ -2,7 +2,7 @@ import { Table } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 // 3. import
 import { increaseAge } from "../store/userSlice";
-import { increaseCnt } from "../store";
+import { increaseCnt, deleteCart } from "../store";
 
 function Cart() {
   // useSelector() - redux store 가져와줌 (등록된 state들)
@@ -28,6 +28,7 @@ function Cart() {
             <th>상품명</th>
             <th>수량</th>
             <th>변경하기</th>
+            <th>삭제하기</th>
           </tr>
         </thead>
         <tbody>
@@ -45,6 +46,16 @@ function Cart() {
                     }}
                   >
                     +
+                  </button>
+                </td>
+                <td>
+                  <button
+                    onClick={() => {
+                      // changeName을 실행시켜달라고 store.js에 부탁
+                      dispatch(deleteCart(i));
+                    }}
+                  >
+                    X
                   </button>
                 </td>
               </tr>
