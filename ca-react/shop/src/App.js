@@ -8,7 +8,7 @@ import axios from "axios";
 import Detail from "./routes/Detail";
 import Cart from "./routes/Cart";
 import { useQuery } from "react-query";
-// 실시간 데이터가 중요하면 리액트 쿼리 9:22
+// 실시간 데이터가 중요하면 리액트 쿼리 9:22!!
 function App() {
   let [shoes, setShoes] = useState(data);
   let navigate = useNavigate();
