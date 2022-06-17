@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
 app.use(express.urlencoded({ extended: true }));
-
+// ejs 연결
+app.set("view engine", "ejs");
 // MongoDB 연결
 var db;
 const MongoClient = require("mongodb").MongoClient;
@@ -10,13 +11,6 @@ MongoClient.connect(
   (에러, client) => {
     if (에러) return console.log(에러);
     db = client.db("todoapp");
-
-    // db.collection("post").insertOne(
-    //   { 이름: "john", _id: 100 },
-    //   (에러, 결과) => {
-    //     console.log("저장완료");
-    //   }
-    // );
 
     app.listen(8080, function () {
       console.log("listening on 8080");
@@ -37,6 +31,15 @@ app.get("/", (요청, 응답) => {
 app.get("/write", (요청, 응답) => {
   응답.sendFile(__dirname + "/write.html");
 });
+app.get("/list", (요청, 응답) => {
+  // db에 저장된 post라는 collection안의 모든 데이터를 꺼내주세요
+  db.collection("post")
+    .find()
+    .toArray((에러, 결과) => {
+      응답.render("list.ejs", { posts: 결과 });
+    });
+});
+
 // 어떤 사람이 /add 경로로 POST 요청을 하면...
 app.post("/add", (요청, 응답) => {
   // input에 적은 정보는 요청에 들어있다.
