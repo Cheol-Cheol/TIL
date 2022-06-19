@@ -69,3 +69,12 @@ app.post("/add", (요청, 응답) => {
     );
   });
 });
+
+app.delete("/delete", (요청, 응답) => {
+  요청.body._id = parseInt(요청.body._id);
+  db.collection("post").deleteOne(요청.body, (에러, 결과) => {
+    console.log("삭제완료");
+    // 응답코드 200를 보내주세요~
+    응답.status(200).send({ message: "성공했습니다" });
+  });
+});
