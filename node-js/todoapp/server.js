@@ -39,6 +39,15 @@ app.get("/list", (요청, 응답) => {
       응답.render("list.ejs", { posts: 결과 });
     });
 });
+// 상세페이지 - url params
+app.get("/detail/:id", (요청, 응답) => {
+  db.collection("post").findOne(
+    { _id: parseInt(요청.params.id) },
+    (에러, 결과) => {
+      응답.render("detail.ejs", { data: 결과 });
+    }
+  );
+});
 
 // 어떤 사람이 /add 경로로 POST 요청을 하면...
 app.post("/add", (요청, 응답) => {
