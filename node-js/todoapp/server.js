@@ -45,13 +45,27 @@ app.post("/add", (요청, 응답) => {
   // input에 적은 정보는 요청에 들어있다.
   // 요청 데이터를 해석하려면 body-parser 라이브러리가 필요
   응답.send("전송완료");
-  db.collection("post").insertOne(
-    {
-      제목: 요청.body.title,
-      날짜: 요청.body.date,
-    },
-    (에러, 결과) => {
-      console.log("저장완료");
-    }
-  );
+
+  db.collection("counter").findOne({ name: "게시물갯수" }, (에러, 결과) => {
+    var 총게시물갯수 = 결과.totalPost;
+
+    db.collection("post").insertOne(
+      {
+        _id: 총게시물갯수 + 1,
+        제목: 요청.body.title,
+        날짜: 요청.body.date,
+      },
+      (에러, 결과) => {
+        console.log("저장완료");
+        // db데이터 하나를 수정하는 법
+        db.collection("counter").updateOne(
+          { name: "게시물갯수" },
+          { $inc: { totalPost: 1 } },
+          (에러, 결과) => {
+            if (에러) return console.log(에러);
+          }
+        );
+      }
+    );
+  });
 });
