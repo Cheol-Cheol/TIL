@@ -43,6 +43,15 @@ app.get("/detail/:id", (요청, 응답) => {
     }
   );
 });
+// 글 수정 페이지
+app.get("/edit/:id", (요청, 응답) => {
+  db.collection("post").findOne(
+    { _id: parseInt(요청.params.id) },
+    (에러, 결과) => {
+      응답.render("edit.ejs", { post: 결과 });
+    }
+  );
+});
 
 // 어떤 사람이 /add 경로로 POST 요청을 하면...
 app.post("/add", (요청, 응답) => {
