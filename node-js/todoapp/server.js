@@ -115,3 +115,70 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.get("/login", (request, response) => {
+  response.render("login.ejs");
+});
+
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    failureRedirect: "/fail",
+  }),
+  (request, response) => {
+    response.redirect("/");
+  }
+);
+app.get("/mypage", 로그인했니, (request, response) => {
+  console.log(request.user);
+  response.render("mypage.ejs", { 사용자: request.user });
+});
+
+// 미들웨어 만드는 법 (마이페이지 접속 전 실행할 미들웨어)
+function 로그인했니(요청, 응답, next) {
+  // 요청.user - 로그인 후 세션이 있으면 요청.user가 항상 있음
+  if (요청.user) next();
+  else 응답.send("로그인안하셨슴!");
+}
+
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: "id",
+      passwordField: "pw",
+      session: true,
+      passReqToCallback: false,
+    },
+    function (입력한아이디, 입력한비번, done) {
+      //console.log(입력한아이디, 입력한비번);
+      db.collection("login").findOne(
+        { id: 입력한아이디 },
+        function (에러, 결과) {
+          if (에러) return done(에러);
+
+          if (!결과)
+            return done(null, false, { message: "존재하지않는 아이디요" });
+          if (입력한비번 == 결과.pw) {
+            return done(null, 결과);
+          } else {
+            return done(null, false, { message: "비번틀렸어요" });
+          }
+        }
+      );
+    }
+  )
+);
+
+// session 데이터 만드는 코드
+passport.serializeUser(function (user, done) {
+  // 상단의 아이디/비번 검증 성공시 user로 자동으로 보내짐
+  done(null, user.id);
+});
+
+passport.deserializeUser(function (아이디, done) {
+  // db에서 위에있는 user.id (=아이디)로 유저를 찾은 뒤에 유저 정보를
+  // done(null, {요기에 넣음});
+  db.collection("login").findOne({ id: 아이디 }, (에러, 결과) => {
+    done(null, 결과);
+  });
+});
