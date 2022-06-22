@@ -4,6 +4,9 @@ app.use(express.urlencoded({ extended: true }));
 // ejs 연결
 app.set("view engine", "ejs");
 app.use("/public", express.static("public"));
+// method-override 연결
+const methodOverride = require("method-override");
+app.use(methodOverride("_method"));
 // MongoDB 연결
 var db;
 const MongoClient = require("mongodb").MongoClient;
@@ -83,6 +86,17 @@ app.post("/add", (요청, 응답) => {
   });
 });
 
+app.put("/edit", (요청, 응답) => {
+  db.collection("post").updateOne(
+    { _id: parseInt(요청.body.id) },
+    { $set: { 제목: 요청.body.title, 날짜: 요청.body.date } },
+    (에러, 결과) => {
+      console.log("수정완료");
+      응답.redirect("/list");
+    }
+  );
+});
+
 app.delete("/delete", (요청, 응답) => {
   요청.body._id = parseInt(요청.body._id);
   db.collection("post").deleteOne(요청.body, (에러, 결과) => {
@@ -91,3 +105,13 @@ app.delete("/delete", (요청, 응답) => {
     응답.status(200).send({ message: "성공했습니다" });
   });
 });
+
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+const session = require("express-session");
+
+app.use(
+  session({ secret: "비밀코드", resave: true, saveUninitialized: false })
+);
+app.use(passport.initialize());
+app.use(passport.session());
