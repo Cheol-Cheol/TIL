@@ -7,20 +7,19 @@ app.use("/public", express.static("public"));
 // method-override 연결
 const methodOverride = require("method-override");
 app.use(methodOverride("_method"));
+// dotenv 연결
+require("dotenv").config();
 // MongoDB 연결
 var db;
 const MongoClient = require("mongodb").MongoClient;
-MongoClient.connect(
-  "mongodb+srv://dream1748:hcw5461752@cluster0.hhvvip9.mongodb.net/?retryWrites=true&w=majority",
-  (에러, client) => {
-    if (에러) return console.log(에러);
-    db = client.db("todoapp");
+MongoClient.connect(process.env.DB_URL, (에러, client) => {
+  if (에러) return console.log(에러);
+  db = client.db("todoapp");
 
-    app.listen(8080, function () {
-      console.log("listening on 8080");
-    });
-  }
-);
+  app.listen(process.env.PORT, function () {
+    console.log("listening on 8080");
+  });
+});
 
 // GET 요청 처리
 app.get("/", (요청, 응답) => {
@@ -55,7 +54,25 @@ app.get("/edit/:id", (요청, 응답) => {
     }
   );
 });
-
+// 검색기능
+app.get("/search", (요청, 응답) => {
+  var 검색조건 = [
+    {
+      $search: {
+        index: "titleSearch",
+        text: {
+          query: 요청.query.value,
+          path: "제목", // 제목날짜 둘다 찾고 싶으면 ['제목', '날짜']
+        },
+      },
+    },
+  ];
+  db.collection("post")
+    .aggregate(검색조건)
+    .toArray((에러, 결과) => {
+      응답.render("search.ejs", { posts: 결과 });
+    });
+});
 // 어떤 사람이 /add 경로로 POST 요청을 하면...
 app.post("/add", (요청, 응답) => {
   // input에 적은 정보는 요청에 들어있다.
@@ -106,6 +123,7 @@ app.delete("/delete", (요청, 응답) => {
   });
 });
 
+// 회원 기능
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
