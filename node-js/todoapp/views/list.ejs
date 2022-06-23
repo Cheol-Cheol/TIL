@@ -60,7 +60,9 @@
             console.log("성공했당께!");
             e.target.closest("li").style.display = "none";
           })
-          .fail(() => {});
+          .fail((결과) => {
+            console.log("실패했당께!");
+          });
       });
       // 검색기능
       $("#search").click(() => {

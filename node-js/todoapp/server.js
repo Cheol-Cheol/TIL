@@ -73,35 +73,6 @@ app.get("/search", (요청, 응답) => {
       응답.render("search.ejs", { posts: 결과 });
     });
 });
-// 어떤 사람이 /add 경로로 POST 요청을 하면...
-app.post("/add", (요청, 응답) => {
-  // input에 적은 정보는 요청에 들어있다.
-  // 요청 데이터를 해석하려면 body-parser 라이브러리가 필요
-  응답.send("전송완료");
-
-  db.collection("counter").findOne({ name: "게시물갯수" }, (에러, 결과) => {
-    var 총게시물갯수 = 결과.totalPost;
-
-    db.collection("post").insertOne(
-      {
-        _id: 총게시물갯수 + 1,
-        제목: 요청.body.title,
-        날짜: 요청.body.date,
-      },
-      (에러, 결과) => {
-        console.log("저장완료");
-        // db데이터 하나를 수정하는 법
-        db.collection("counter").updateOne(
-          { name: "게시물갯수" },
-          { $inc: { totalPost: 1 } },
-          (에러, 결과) => {
-            if (에러) return console.log(에러);
-          }
-        );
-      }
-    );
-  });
-});
 
 app.put("/edit", (요청, 응답) => {
   db.collection("post").updateOne(
@@ -112,15 +83,6 @@ app.put("/edit", (요청, 응답) => {
       응답.redirect("/list");
     }
   );
-});
-
-app.delete("/delete", (요청, 응답) => {
-  요청.body._id = parseInt(요청.body._id);
-  db.collection("post").deleteOne(요청.body, (에러, 결과) => {
-    console.log("삭제완료");
-    // 응답코드 200를 보내주세요~
-    응답.status(200).send({ message: "성공했습니다" });
-  });
 });
 
 // 회원 기능
@@ -209,3 +171,47 @@ app.post("/register", function (요청, 응답) {
     }
   );
 });
+
+// 어떤 사람이 /add 경로로 POST 요청을 하면...
+app.post("/add", (요청, 응답) => {
+  // input에 적은 정보는 요청에 들어있다.
+  // 요청 데이터를 해석하려면 body-parser 라이브러리가 필요
+  db.collection("counter").findOne({ name: "게시물갯수" }, (에러, 결과) => {
+    var 총게시물갯수 = 결과.totalPost;
+    var 저장할거 = {
+      _id: 총게시물갯수 + 1,
+      작성자: 요청.user._id,
+      제목: 요청.body.title,
+      날짜: 요청.body.date,
+    };
+    db.collection("post").insertOne(저장할거, (에러, 결과) => {
+      console.log("저장완료");
+      // db데이터 하나를 수정하는 법
+      db.collection("counter").updateOne(
+        { name: "게시물갯수" },
+        { $inc: { totalPost: 1 } },
+        (에러, 결과) => {
+          if (에러) return console.log(에러);
+          응답.redirect("/list");
+        }
+      );
+    });
+  });
+});
+
+app.delete("/delete", (요청, 응답) => {
+  요청.body._id = parseInt(요청.body._id);
+  var 삭제할데이터 = { _id: 요청.body._id, 작성자: 요청.user._id };
+
+  db.collection("post").deleteOne(삭제할데이터, (에러, 결과) => {
+    if (에러) return console.log(에러);
+    console.log("삭제완료");
+    // 응답코드 200를 보내주세요~
+    응답.status(200).send({ message: "성공했습니다" });
+  });
+});
+
+// app.use() : 요청과 응답사이에 실행가능한 미들웨어
+// 고객이 /shop 경로로 요청했을 때 이런 미들웨어를 적용해주세요
+app.use("/shop", require("./routes/shop"));
+app.use("/board/sub", require("./routes/board"));
