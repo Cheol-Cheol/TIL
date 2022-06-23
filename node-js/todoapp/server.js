@@ -200,3 +200,12 @@ passport.deserializeUser(function (아이디, done) {
     done(null, 결과);
   });
 });
+
+app.post("/register", function (요청, 응답) {
+  db.collection("login").insertOne(
+    { id: 요청.body.id, pw: 요청.body.pw },
+    function (에러, 결과) {
+      응답.redirect("/");
+    }
+  );
+});
