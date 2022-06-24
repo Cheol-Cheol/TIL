@@ -249,3 +249,67 @@ app.post("/upload", upload.single("profile"), function (요청, 응답) {
 app.get("/image/:imageName", (요청, 응답) => {
   응답.sendFile(__dirname + "/public/image/" + 요청.params.imageName);
 });
+
+const { ObjectId } = require("mongodb");
+
+app.post("/chatroom", 로그인했니, (요청, 응답) => {
+  let 데이터 = {
+    member: [ObjectId(요청.body.당한사람id), 요청.user._id],
+    title: 요청.body.title,
+    date: new Date(),
+  };
+  db.collection("chatroom").insertOne(데이터, (에러, 결과) => {
+    console.log("생성완료");
+    응답.status(200).send({ message: "서버에서 채팅방을 개설했습니다." });
+  });
+});
+
+app.get("/chat", 로그인했니, (요청, 응답) => {
+  db.collection("chatroom")
+    .find({ member: 요청.user._id })
+    .toArray()
+    .then((결과) => {
+      응답.render("chat.ejs", { data: 결과 });
+    });
+});
+
+app.post("/message", 로그인했니, (요청, 응답) => {
+  var 저장할거 = {
+    parent: 요청.body.parent,
+    content: 요청.body.content,
+    userId: 요청.user._id,
+    date: new Date(),
+  };
+  db.collection("message")
+    .insertOne(저장할거)
+    .then(() => {
+      console.log("DB저장성공");
+      응답.send("DB저장성공");
+    });
+});
+
+app.get("/message/:id", 로그인했니, function (요청, 응답) {
+  응답.writeHead(200, {
+    Connection: "keep-alive",
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+  });
+  db.collection("message")
+    .find({ parent: 요청.params.id })
+    .toArray()
+    .then((결과) => {
+      응답.write("event: test\n");
+      응답.write(`data: ${JSON.stringify(결과)}\n\n`);
+    });
+
+  const 찾을문서 = [
+    { $match: { "fullDocument.parent": 요청.params.parentid } },
+  ];
+
+  const changeStream = db.collection("message").watch(찾을문서);
+  changeStream.on("change", (result) => {
+    console.log(result.fullDocument);
+    var 추가된문서 = [result.fullDocument];
+    응답.write(`data: ${JSON.stringify(추가된문서)}\n\n`);
+  });
+});
