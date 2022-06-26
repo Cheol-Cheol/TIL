@@ -172,8 +172,8 @@ app.post("/register", function (요청, 응답) {
   );
 });
 
-// 어떤 사람이 /add 경로로 POST 요청을 하면...
-app.post("/add", (요청, 응답) => {
+// 어떤 사람이 /newpost 경로로 POST 요청을 하면...
+app.post("/newpost", (요청, 응답) => {
   // input에 적은 정보는 요청에 들어있다.
   // 요청 데이터를 해석하려면 body-parser 라이브러리가 필요
   db.collection("counter").findOne({ name: "게시물갯수" }, (에러, 결과) => {
