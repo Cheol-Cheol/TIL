@@ -53,6 +53,9 @@
       $("#send").click(() => {
         socket.emit("user-send", "안녕!");
       });
+      socket.on("broadcast", (data) => {
+        $("#content").append("<div>" + data + "</div>");
+      });
     </script>
     <script>
       var 지금누른채팅방id;

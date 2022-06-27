@@ -327,7 +327,7 @@ app.get("/socket", (요청, 응답) => {
 io.on("connection", function (socket) {
   console.log("웹 소켓 연결 성공!");
 
-  socket.on("user-send", (data) => {
-    console.log(data);
+  socket.on("user-send", function (data) {
+    io.emit("broadcast", data); //모든사람에게 데이터 전송
   });
 });
