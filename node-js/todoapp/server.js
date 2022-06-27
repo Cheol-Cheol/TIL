@@ -1,5 +1,10 @@
 const express = require("express");
 const app = express();
+// socket.io 세팅
+const http = require("http").createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(http);
+//
 app.use(express.urlencoded({ extended: true }));
 // ejs 연결
 app.set("view engine", "ejs");
@@ -16,7 +21,7 @@ MongoClient.connect(process.env.DB_URL, (에러, client) => {
   if (에러) return console.log(에러);
   db = client.db("todoapp");
 
-  app.listen(process.env.PORT, function () {
+  http.listen(process.env.PORT, function () {
     console.log("listening on 8080");
   });
 });
@@ -251,6 +256,7 @@ app.get("/image/:imageName", (요청, 응답) => {
 });
 
 const { ObjectId } = require("mongodb");
+const { Socket } = require("dgram");
 
 app.post("/chatroom", 로그인했니, (요청, 응답) => {
   let 데이터 = {
@@ -311,5 +317,17 @@ app.get("/message/:id", 로그인했니, function (요청, 응답) {
     console.log(result.fullDocument);
     var 추가된문서 = [result.fullDocument];
     응답.write(`data: ${JSON.stringify(추가된문서)}\n\n`);
+  });
+});
+
+app.get("/socket", (요청, 응답) => {
+  응답.render("socket.ejs");
+});
+
+io.on("connection", function (socket) {
+  console.log("웹 소켓 연결 성공!");
+
+  socket.on("user-send", (data) => {
+    console.log(data);
   });
 });

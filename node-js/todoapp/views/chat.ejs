@@ -44,8 +44,16 @@
         </div>
       </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <button id="send">서버로 데이터 보내기</button>
+
+    <script>
+      var socket = io();
+      $("#send").click(() => {
+        socket.emit("user-send", "안녕!");
+      });
+    </script>
     <script>
       var 지금누른채팅방id;
       var eventSource;
