@@ -9,11 +9,32 @@ export default class Habits extends Component {
       { id: 3, name: "Coding", count: 0 },
     ],
   };
+
+  handleIncrement = (habit) => {
+    console.log(`handleIncrement ${habit.name}`);
+  };
+
+  handleDecrement = (habit) => {
+    console.log(`handleDecrement ${habit.name}`);
+  };
+
+  handleDelete = (habit) => {
+    console.log(`handleDelete ${habit.name}`);
+  };
+
   render() {
     return (
       <ul>
         {this.state.habits.map((habit) => {
-          return <Habit habit={habit} key={habit.id} />;
+          return (
+            <Habit
+              habit={habit}
+              key={habit.id}
+              onIncrement={this.handleIncrement}
+              onDecrement={this.handleDecrement}
+              onDelete={this.handleDelete}
+            />
+          );
         })}
       </ul>
     );
