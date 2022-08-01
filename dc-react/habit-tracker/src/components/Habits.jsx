@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import Habit from "./Habit";
+import HabitAddForm from "./HabitAddForm";
 
 export default class Habits extends Component {
   render() {
     return (
       <div className="habits">
+        <HabitAddForm onAdd={this.props.onAdd} />
         <ul>
           {this.props.habits.map((habit) => {
             return (

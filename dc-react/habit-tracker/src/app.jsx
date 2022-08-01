@@ -35,6 +35,16 @@ class App extends Component {
     this.setState({ habits });
   };
 
+  onAdd = (name) => {
+    const data = {
+      id: Date.now(),
+      name,
+      count: 0,
+    };
+    const habits = [...this.state.habits, data];
+    this.setState({ habits });
+  };
+
   render() {
     return (
       <>
@@ -46,6 +56,7 @@ class App extends Component {
           onIncrement={this.onIncrement}
           onDecrement={this.onDecrement}
           onDelete={this.onDelete}
+          onAdd={this.onAdd}
         />
       </>
     );
